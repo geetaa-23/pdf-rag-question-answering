@@ -1,25 +1,29 @@
-import ollama
+import streamlit as st
+import google.generativeai as genai
+
+genai.configure(
+    api_key=st.secrets["GEMINI_API_KEY"]
+)
+
+model = genai.GenerativeModel("gemini-1.5-flash")
+
 
 def generate_answer(question, context):
 
     prompt = f"""
-    Context:
-    {context}
+You are a helpful assistant.
 
-    Question:
-    {question}
+Answer the question using ONLY the provided context.
 
-    Answer:
-    """
+Context:
+{context}
 
-    response = ollama.chat(
-        model="llama3",
-        messages=[
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ]
-    )
+Question:
+{question}
 
-    return response["message"]["content"]
+Answer:
+"""
+
+    response = model.generate_content(prompt)
+
+    return response.text
